@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank Pro - Secure FinTech Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #8b5cf6;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --dark: #0f172a; --text: #f1f5f9; --text-dim: #94a3b8;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text); min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+            padding: 20px 30px; margin-bottom: 30px; display: flex;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .logo {
+            font-size: 28px; font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .btn {
+            padding: 12px 24px; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; text-transform: uppercase;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .card {
+            background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+            padding: 30px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .card-title {
+            font-size: 24px; font-weight: bold; margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; color: var(--text); font-weight: 600; }
+        .form-input {
+            width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            color: var(--text); font-size: 14px; transition: all 0.3s ease;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        .password-strength { height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin-top: 8px; }
+        .password-strength-bar { height: 100%; width: 0%; transition: all 0.3s ease; }
+        .strength-weak { background: var(--danger); width: 33%; }
+        .strength-medium { background: var(--warning); width: 66%; }
+        .strength-strong { background: var(--success); width: 100%; }
+        .alert {
+            padding: 12px 16px; border-radius: 12px; margin-bottom: 20px;
+            font-weight: 500; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success); color: var(--success); }
+        .alert-danger { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); color: var(--danger); }
+        .alert-warning { background: rgba(245, 158, 11, 0.2); border: 1px solid var(--warning); color: var(--warning); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 20px; padding: 25px; text-align: center;
+        }
+        .stat-value { font-size: 36px; font-weight: bold; margin: 10px 0; }
+        .stat-label { color: var(--text-dim); font-size: 14px; }
+        .transaction-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 12px;
+            margin-bottom: 10px; transition: all 0.3s ease;
+        }
+        .activity-log { max-height: 300px; overflow-y: auto; padding: 10px; }
+        .log-entry {
+            padding: 10px; background: rgba(15, 23, 42, 0.4);
+            border-left: 3px solid var(--primary); border-radius: 8px;
+            margin-bottom: 8px; font-size: 13px;
+        }
+        .log-time { color: var(--text-dim); font-size: 11px; }
+        .file-upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.2); border-radius: 12px;
+            padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s ease;
+        }
+        .file-upload-zone:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+        .hidden { display: none !important; }
+        .encrypted-text {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger);
+            color: var(--danger); padding: 10px; border-radius: 8px;
+            font-family: monospace; word-break: break-all; font-size: 12px;
+        }
+        .decrypted-text {
+            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success);
+            color: var(--success); padding: 10px; border-radius: 8px; font-family: monospace;
+        }
+        .session-timer { color: var(--warning); font-size: 12px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(255, 255, 255, 0.1); }
+        .tab {
+            padding: 12px 24px; background: transparent; border: none;
+            color: var(--text-dim); cursor: pointer; font-weight: 600;
+            transition: all 0.3s ease; border-bottom: 3px solid transparent;
+        }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="authPage">
+            <div class="card" style="max-width: 500px; margin: 100px auto;">
+                <div class="card-title" style="text-align: center;">🔐 SecureBank Pro</div>
+                <div id="authAlertContainer"></div>
+                
+                <div id="loginForm">
+                    <h3 style="margin-bottom: 20px;">Login to Your Account</h3>
+                    <div id="loginAttemptsDisplay" style="font-size: 12px; color: var(--text-dim); margin-bottom: 10px;"></div>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="loginUsername" placeholder="Enter username" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter password" maxlength="100">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="login()">Login</button>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="showRegister()">Create New Account</button>
+                </div>
+
+                <div id="registerForm" class="hidden">
+                    <h3 style="margin-bottom: 20px;">Create Your Account</h3>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="regUsername" placeholder="Alphanumeric only" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="regEmail" placeholder="your.email@example.com" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password (Min 8 chars, 1 number, 1 symbol)</label>
+                        <input type="password" class="form-input" id="regPassword" placeholder="Strong password" oninput="checkPasswordStrength()" maxlength="100">
+                        <div class="password-strength"><div class="password-strength-bar" id="strengthBar"></div></div>
+                        <small id="strengthText" style="color: var(--text-dim); margin-top: 5px; display: block;"></small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-input" id="regConfirmPassword" placeholder="Re-enter password" maxlength="100">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="register()">Register</button>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="showLogin()">Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardPage" class="hidden">
+            <div class="header">
+                <div class="logo">🔐 SecureBank Pro</div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div>
+                        <div style="font-weight: bold;" id="usernameDisplay"></div>
+                        <div class="session-timer" id="sessionTimer">Session: 5:00</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div id="dashboardAlertContainer"></div>
+
+            <div class="grid">
+                <div class="stat-card">
+                    <div class="stat-label">💰 Account Balance</div>
+                    <div class="stat-value" id="accountBalance">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">📊 Total Transactions</div>
+                    <div class="stat-value" id="totalTransactions">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🔒 Security Score</div>
+                    <div class="stat-value">100%</div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('transactions')">Transactions</button>
+                <button class="tab" onclick="showTab('profile')">Profile</button>
+                <button class="tab" onclick="showTab('encryption')">Encryption</button>
+                <button class="tab" onclick="showTab('upload')">File Upload</button>
+                <button class="tab" onclick="showTab('logs')">Activity Logs</button>
+            </div>
+
+            <div id="transactionsTab">
+                <div class="card">
+                    <div class="card-title">💸 New Transaction</div>
+                    <div class="form-group">
+                        <label class="form-label">Recipient</label>
+                        <input type="text" class="form-input" id="recipient" placeholder="Enter recipient" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount ($)</label>
+                        <input type="number" class="form-input" id="amount" placeholder="0.00" min="0" step="0.01" max="999999">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-input" id="description" placeholder="Transaction note" maxlength="200">
+                    </div>
+                    <button class="btn btn-success" onclick="addTransaction()">Send Money</button>
+                </div>
+                <div class="card">
+                    <div class="card-title">📜 Transaction History</div>
+                    <div id="transactionList"></div>
+                </div>
+            </div>
+
+            <div id="profileTab" class="hidden">
+                <div class="card">
+                    <div class="card-title">👤 Update Profile</div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="profileEmail" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-input" id="profilePhone" placeholder="+1234567890" maxlength="15">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-input" id="profileAddress" maxlength="200">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateProfile()">Save Changes</button>
+                </div>
+            </div>
+
+            <div id="encryptionTab" class="hidden">
+                <div class="card">
+                    <div class="card-title">🔐 Data Encryption Demo</div>
+                    <div class="form-group">
+                        <label class="form-label">Enter Sensitive Data</label>
+                        <input type="text" class="form-input" id="dataToEncrypt" placeholder="Enter data" maxlength="500">
+                    </div>
+                    <button class="btn btn-primary" onclick="encryptData()">Encrypt</button>
+                    <button class="btn btn-secondary" onclick="decryptData()" style="margin-left: 10px;">Decrypt</button>
+                    <div style="margin-top: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Encrypted:</label>
+                            <div class="encrypted-text" id="encryptedOutput">No data encrypted</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Decrypted:</label>
+                            <div class="decrypted-text" id="decryptedOutput">No data decrypted</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="uploadTab" class="hidden">
+                <div class="card">
+                    <div class="card-title">📎 File Upload</div>
+                    <div class="file-upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <div style="font-size: 48px;">📁</div>
+                        <div>Click to upload</div>
+                        <small style="color: var(--text-dim);">PDF, DOC, DOCX, TXT, JPG, PNG only (Max 5MB)</small>
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;" onchange="validateFile(this)" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
+                    <div id="fileStatus" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <div id="logsTab" class="hidden">
+                <div class="card">
+                    <div class="card-title">📋 Activity Logs</div>
+                    <div class="activity-log" id="activityLog"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let sessionTimeout = null;
+        let sessionTimer = 300;
+        let encryptedData = '';
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return 'SHA256:' + Math.abs(hash).toString(16).padStart(16, '0');
+        }
+
+        function simpleEncrypt(text) {
+            return btoa(text).split('').reverse().join('');
+        }
+
+        function simpleDecrypt(text) {
+            return atob(text.split('').reverse().join(''));
+        }
+
+        function sanitizeInput(input) {
+            return String(input).replace(/[<>\"'&]/g, '').substring(0, 5000);
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('regPassword').value;
+            const bar = document.getElementById('strengthBar');
+            const text = document.getElementById('strengthText');
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+            if (password.length >= 12) strength++;
+            bar.className = 'password-strength-bar';
+            if (strength <= 1) {
+                bar.classList.add('strength-weak');
+                text.textContent = 'Weak'; text.style.color = 'var(--danger)';
+            } else if (strength <= 2) {
+                bar.classList.add('strength-medium');
+                text.textContent = 'Medium'; text.style.color = 'var(--warning)';
+            } else {
+                bar.classList.add('strength-strong');
+                text.textContent = 'Strong'; text.style.color = 'var(--success)';
+            }
+        }
+
+        function showAlert(msg, type, container) {
+            const div = document.createElement('div');
+            div.className = `alert alert-${type}`;
+            div.textContent = msg;
+            document.getElementById(container).innerHTML = '';
+            document.getElementById(container).appendChild(div);
+            setTimeout(() => div.remove(), 5000);
+        }
+
+        function addLog(action) {
+            const logs = JSON.parse(localStorage.getItem('activityLogs') || '[]');
+            logs.unshift({ action, time: new Date().toLocaleString() });
+            if (logs.length > 50) logs.pop();
+            localStorage.setItem('activityLogs', JSON.stringify(logs));
+            updateLogs();
+        }
+
+        function updateLogs() {
+            const logs = JSON.parse(localStorage.getItem('activityLogs') || '[]');
+            const html = logs.map(l => `<div class="log-entry">${l.action}<div class="log-time">${l.time}</div></div>`).join('');
+            document.getElementById('activityLog').innerHTML = html || '<p style="color: var(--text-dim);">No activity yet</p>';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function register() {
+            const username = sanitizeInput(document.getElementById('regUsername').value.trim());
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+
+            if (!username || !email || !password) {
+                showAlert('All fields required', 'danger', 'authAlertContainer');
+                return;
+            }
+            if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                showAlert('Username must be alphanumeric', 'danger', 'authAlertContainer');
+                return;
+            }
+            if (!validateEmail(email)) {
+                showAlert('Invalid email format', 'danger', 'authAlertContainer');
+                return;
+            }
+            if (!validatePassword(password)) {
+                showAlert('Password must be 8+ chars with number and symbol', 'danger', 'authAlertContainer');
+                return;
+            }
+            if (password !== confirm) {
+                showAlert('Passwords do not match', 'danger', 'authAlertContainer');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[username]) {
+                showAlert('Username already exists', 'danger', 'authAlertContainer');
+                return;
+            }
+
+            users[username] = {
+                email, password: simpleHash(password), balance: 5000,
+                transactions: [], profile: { email, phone: '', address: '' }
+            };
+            localStorage.setItem('users', JSON.stringify(users));
+            showAlert('Registration successful!', 'success', 'authAlertContainer');
+            addLog('User registered: ' + username);
+            setTimeout(showLogin, 2000);
+        }
+
+        function login() {
+            const username = sanitizeInput(document.getElementById('loginUsername').value.trim());
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showAlert('Enter username and password', 'danger', 'authAlertContainer');
+                return;
+            }
+
+            const attempts = JSON.parse(localStorage.getItem('loginAttempts') || '{}');
+            if (!attempts[username]) attempts[username] = { count: 0, locked: false };
+
+            if (attempts[username].locked) {
+                showAlert('Account locked due to failed attempts', 'danger', 'authAlertContainer');
+                document.getElementById('loginAttemptsDisplay').textContent = 'Account is locked';
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (!users[username] || users[username].password !== simpleHash(password)) {
+                attempts[username].count++;
+                localStorage.setItem('loginAttempts', JSON.stringify(attempts));
+                
+                if (attempts[username].count >= 5) {
+                    attempts[username].locked = true;
+                    localStorage.setItem('loginAttempts', JSON.stringify(attempts));
+                    showAlert('Account locked after 5 failed attempts', 'danger', 'authAlertContainer');
+                    addLog('Account locked: ' + username);
+                    return;
+                }
+                
+                showAlert(`Invalid credentials (${attempts[username].count}/5)`, 'danger', 'authAlertContainer');
+                document.getElementById('loginAttemptsDisplay').textContent = `Failed attempts: ${attempts[username].count}/5`;
+                addLog('Failed login attempt: ' + username);
+                return;
+            }
+
+            attempts[username] = { count: 0, locked: false };
+            localStorage.setItem('loginAttempts', JSON.stringify(attempts));
+            currentUser = username;
+            localStorage.setItem('currentSession', JSON.stringify({ user: username, time: Date.now() }));
+            addLog('User logged in: ' + username);
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+            
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            const user = users[currentUser];
+            
+            document.getElementById('usernameDisplay').textContent = currentUser;
+            document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+            document.getElementById('accountBalance').textContent = '$' + user.balance.toFixed(2);
+            document.getElementById('totalTransactions').textContent = user.transactions.length;
+            document.getElementById('profileEmail').value = user.profile.email;
+            document.getElementById('profilePhone').value = user.profile.phone;
+            document.getElementById('profileAddress').value = user.profile.address;
+            
+            updateTransactionList();
+            updateLogs();
+            startSessionTimer();
+        }
+
+        function startSessionTimer() {
+            sessionTimer = 300;
+            clearInterval(sessionTimeout);
+            sessionTimeout = setInterval(() => {
+                sessionTimer--;
+                const mins = Math.floor(sessionTimer / 60);
+                const secs = sessionTimer % 60;
+                document.getElementById('sessionTimer').textContent = `Session: ${mins}:${secs.toString().padStart(2, '0')}`;
+                
+                if (sessionTimer <= 0) {
+                    clearInterval(sessionTimeout);
+                    showAlert('Session expired due to inactivity', 'warning', 'dashboardAlertContainer');
+                    addLog('Session expired: ' + currentUser);
+                    setTimeout(logout, 2000);
+                }
+            }, 1000);
+            
+            document.addEventListener('click', () => {
+                if (currentUser) sessionTimer = 300;
+            });
+        }
+
+        function logout() {
+            addLog('User logged out: ' + currentUser);
+            clearInterval(sessionTimeout);
+            currentUser = null;
+            localStorage.removeItem('currentSession');
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            showAlert('Logged out successfully', 'success', 'authAlertContainer');
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('[id$="Tab"]').forEach(c => c.classList.add('hidden'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+        }
+
+        function addTransaction() {
+            const recipient = sanitizeInput(document.getElementById('recipient').value.trim());
+            const amount = parseFloat(document.getElementById('amount').value);
+            const desc = sanitizeInput(document.getElementById('description').value.trim());
+
+            if (!recipient || !amount || amount <= 0) {
+                showAlert('Fill all fields with valid data', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9\s]+$/.test(recipient)) {
+                showAlert('Invalid recipient name', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+
+            if (amount > 999999) {
+                showAlert('Amount exceeds maximum limit', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[currentUser].balance < amount) {
+                showAlert('Insufficient balance', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+
+            users[currentUser].balance -= amount;
+            users[currentUser].transactions.push({
+                recipient, amount, desc, date: new Date().toLocaleString()
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            document.getElementById('recipient').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            
+            showAlert('Transaction successful', 'success', 'dashboardAlertContainer');
+            addLog(`Transaction: $${amount} to ${recipient}`);
+            document.getElementById('accountBalance').textContent = '$' + users[currentUser].balance.toFixed(2);
+            document.getElementById('totalTransactions').textContent = users[currentUser].transactions.length;
+            updateTransactionList();
+        }
+
+        function updateTransactionList() {
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            const txs = users[currentUser].transactions;
+            const html = txs.map(t => `
+                <div class="transaction-item">
+                    <div>
+                        <div style="font-weight: bold;">${t.recipient}</div>
+                        <div style="font-size: 12px; color: var(--text-dim);">${t.desc}</div>
+                        <div style="font-size: 11px; color: var(--text-dim);">${t.date}</div>
+                    </div>
+                    <div style="font-weight: bold; color: var(--danger);">-${t.amount.toFixed(2)}</div>
+                </div>
+            `).join('');
+            document.getElementById('transactionList').innerHTML = html || '<p style="color: var(--text-dim);">No transactions yet</p>';
+        }
+
+        function updateProfile() {
+            const email = document.getElementById('profileEmail').value.trim();
+            const phone = sanitizeInput(document.getElementById('profilePhone').value.trim());
+            const address = sanitizeInput(document.getElementById('profileAddress').value.trim());
+
+            if (!email || !validateEmail(email)) {
+                showAlert('Invalid email', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+
+            if (phone && !/^\+?[0-9]{10,15}$/.test(phone)) {
+                showAlert('Invalid phone number', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            users[currentUser].profile = { email, phone, address };
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            showAlert('Profile updated successfully', 'success', 'dashboardAlertContainer');
+            addLog('Profile updated');
+        }
+
+        function encryptData() {
+            const data = document.getElementById('dataToEncrypt').value.trim();
+            if (!data) {
+                showAlert('Enter data to encrypt', 'warning', 'dashboardAlertContainer');
+                return;
+            }
+            if (data.length > 500) {
+                showAlert('Data too long (max 500 chars)', 'danger', 'dashboardAlertContainer');
+                return;
+            }
+            encryptedData = simpleEncrypt(data);
+            document.getElementById('encryptedOutput').textContent = encryptedData;
+            document.getElementById('decryptedOutput').textContent = 'Click Decrypt to view';
+            showAlert('Data encrypted successfully', 'success', 'dashboardAlertContainer');
+            addLog('Data encrypted');
+        }
+
+        function decryptData() {
+            if (!encryptedData) {
+                showAlert('No encrypted data available', 'warning', 'dashboardAlertContainer');
+                return;
+            }
+            try {
+                const decrypted = simpleDecrypt(encryptedData);
+                document.getElementById('decryptedOutput').textContent = decrypted;
+                showAlert('Data decrypted successfully', 'success', 'dashboardAlertContainer');
+                addLog('Data decrypted');
+            } catch (e) {
+                showAlert('Decryption failed', 'danger', 'dashboardAlertContainer');
+            }
+        }
+
+        function validateFile(input) {
+            const file = input.files[0];
+            const status = document.getElementById('fileStatus');
+            
+            if (!file) return;
+
+            const allowedTypes = ['application/pdf', 'application/msword', 
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'text/plain', 'image/jpeg', 'image/jpg', 'image/png'];
+            const allowedExts = ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.jpeg', '.png'];
+            const maxSize = 5 * 1024 * 1024;
+
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (ext === '.exe' || ext === '.bat' || ext === '.sh' || ext === '.js') {
+                status.innerHTML = '<div class="alert alert-danger">⛔ Executable files are not allowed!</div>';
+                addLog('File upload blocked: ' + file.name);
+                input.value = '';
+                return;
+            }
+
+            if (!allowedExts.includes(ext)) {
+                status.innerHTML = '<div class="alert alert-danger">❌ File type not allowed!</div>';
+                addLog('Invalid file type: ' + file.name);
+                input.value = '';
+                return;
+            }
+
+            if (file.size > maxSize) {
+                status.innerHTML = '<div class="alert alert-danger">❌ File too large (max 5MB)</div>';
+                addLog('File too large: ' + file.name);
+                input.value = '';
+                return;
+            }
+
+            status.innerHTML = `<div class="alert alert-success">✅ File "${file.name}" validated successfully (${(file.size/1024).toFixed(2)} KB)</div>`;
+            showAlert('File uploaded successfully', 'success', 'dashboardAlertContainer');
+            addLog('File uploaded: ' + file.name);
+        }
+
+        window.onload = function() {
+            const session = JSON.parse(localStorage.getItem('currentSession') || 'null');
+            if (session && (Date.now() - session.time) < 300000) {
+                currentUser = session.user;
+                showDashboard();
+            }
+        };
+    </script>
+</body>
+</html>
